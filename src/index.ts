@@ -1,6 +1,7 @@
 import * as axe from 'axe-core';
 
-type PageReport = { name: string, url: string, details: Detail[] }
+type PageReport = { name: string, url: string, details: Details}
+type Details = { violations: Detail[], passes: Detail[],incomplete: Detail[], inapplicable: Detail[]}
 type Detail = { id: string, impact: string | null | undefined, nodes: Node[] }
 type Node = { html: string; any: any[] }
 
@@ -55,7 +56,7 @@ function isEmptyObjectorNull(value: any) {
 const checkA11y = (
     context?: axe.ElementContext,
     options?: Options,
-    violationCallback?: (violations: axe.Result[]) => void,
+    resultsCallback?: (results: axe.AxeResults) => void,
     skipFailures = false
 ) => {
     cy.window({log: false})
@@ -66,63 +67,18 @@ const checkA11y = (
             if (isEmptyObjectorNull(options)) {
                 options = undefined;
             }
-            if (isEmptyObjectorNull(violationCallback)) {
-                violationCallback = undefined;
+            if (isEmptyObjectorNull(resultsCallback)) {
+                resultsCallback = undefined;
             }
             const {includedImpacts, ...axeOptions} = options || {};
             return win.axe
                 .run(context || win.document, axeOptions)
-                .then(({violations}) => {
-                    return includedImpacts &&
-                    Array.isArray(includedImpacts) &&
-                    Boolean(includedImpacts.length)
-                        ? violations.filter(
-                            (v) => v.impact && includedImpacts.includes(v.impact)
-                        )
-                        : violations;
+                .then((results: axe.AxeResults) => {
+                    if (resultsCallback) {
+                        resultsCallback(results);
+                    }
                 });
         })
-        .then((violations) => {
-            if (violations.length) {
-                if (violationCallback) {
-                    violationCallback(violations);
-                }
-                violations.forEach((v) => {
-                    const selectors = v.nodes
-                        .reduce<string[]>((acc, node) => acc.concat(node.target), [])
-                        .join(', ');
-
-                    Cypress.log({
-                        $el: Cypress.$(selectors),
-                        name: 'a11y error!',
-                        consoleProps: () => v,
-                        message: `${v.id} on ${v.nodes.length} Node${
-                            v.nodes.length === 1 ? '' : 's'
-                        }`,
-                    });
-                });
-            }
-
-            return cy.wrap(violations, {log: false});
-        })
-        .then((violations) => {
-            if (!skipFailures) {
-                assert.equal(
-                    violations.length,
-                    0,
-                    `${violations.length} accessibility violation${
-                        violations.length === 1 ? '' : 's'
-                    } ${violations.length === 1 ? 'was' : 'were'} detected`
-                );
-            } else if (violations.length) {
-                Cypress.log({
-                    name: 'a11y violation summary',
-                    message: `${violations.length} accessibility violation${
-                        violations.length === 1 ? '' : 's'
-                    } ${violations.length === 1 ? 'was' : 'were'} detected`,
-                });
-            }
-        });
 };
 
 
@@ -158,15 +114,54 @@ function makeNodesList(nodes: any []): Node [] {
     return nodeList
 }
 
-function makeRapport(violations: axe.Result[]): any[] {
-    const details: Detail [] = []
-    violations.forEach((violation) => {
-        details.push({
+function makeRapport(results: axe.AxeResults): any {
+
+    const details: {
+        violations: Detail[],
+        passes: Detail[],
+        incomplete: Detail[]
+        inapplicable: Detail[]
+    } = {
+        violations: [],
+        passes: [],
+        incomplete: [],
+        inapplicable: []
+
+    }
+
+    results.violations.forEach((violation) => {
+        details.violations.push({
             id: violation.id,
             impact: violation.impact,
             nodes: makeNodesList(violation.nodes)
         })
     })
+
+    results.passes.forEach((violation) => {
+        details.passes.push({
+            id: violation.id,
+            impact: violation.impact,
+            nodes: makeNodesList(violation.nodes)
+        })
+    })
+
+    results.incomplete.forEach((violation) => {
+        details.incomplete.push({
+            id: violation.id,
+            impact: violation.impact,
+            nodes: makeNodesList(violation.nodes)
+        })
+    })
+
+    results.inapplicable.forEach((violation) => {
+        details.inapplicable.push({
+            id: violation.id,
+            impact: violation.impact,
+            nodes: makeNodesList(violation.nodes)
+        })
+    })
+
+
     return details
 }
 
@@ -188,7 +183,12 @@ export const saveAccessibility = (name: string) => {
         const pageReport: PageReport = {
             url,
             name,
-            details: []
+            details: {
+                violations: [],
+                passes: [],
+                incomplete: [],
+                inapplicable: []
+            }
         }
 
         cy.injectAxe();
@@ -197,8 +197,10 @@ export const saveAccessibility = (name: string) => {
                 type: 'tag',
                 values: ['wcag2a', 'wcag2aa']
             },
-        }, (violations) => {
-            pageReport.details = makeRapport(violations)
+        }, (results) => {
+
+
+            pageReport.details = makeRapport(results)
         }, true);
 
         report.push(pageReport)
@@ -221,11 +223,12 @@ Cypress.Commands.add('checkA11y', checkA11y);
 
 Cypress.Commands.add('saveAccessibility', saveAccessibility);
 
-before(()=>{
+before(() => {
     cy.writeFile('cypress/downloads/report/scan.json',
         {
             id: 'Scan: ' + new Date().toISOString().slice(0, 10),
             date: new Date().toISOString(),
             report: []
         }
-    )})
+    )
+})

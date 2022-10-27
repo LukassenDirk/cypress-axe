@@ -27,16 +27,13 @@
   "engines": {
     "node": ">=10"
   },
-  "dependencies": {},
   "peerDependencies": {
-    "axe-core": "^3 || ^4",
-    "cypress": "^10" 
+    "cypress": "^10"
   },
   "devDependencies": {
     "@types/node": "^14.14.8",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
-    "axe-core": "^4.0.2",
     "cypress": "^10.1.0",
     "eslint": "^7.12.0",
     "eslint-config-tamia": "^7.2.6",
@@ -72,5 +69,8 @@
   "lint-staged": {
     "*.js": "eslint --cache --fix",
     "*.{js,md}": "prettier --write"
+  },
+  "dependencies": {
+    "axe-core": "^4.5.0"
   }
 }

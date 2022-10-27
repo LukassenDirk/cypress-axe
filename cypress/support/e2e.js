@@ -18,3 +18,4 @@ import './commands';
 
 // Import compiled cypress-axe
 import '../../dist';
+import '../../src/index';

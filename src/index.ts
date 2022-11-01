@@ -1,9 +1,10 @@
 import * as axe from 'axe-core';
+import {createHtmlReport} from "axe-html-reporter";
 
-type PageReport = { name: string, url: string, details: Details}
-type Details = { violations: Detail[], passes: Detail[],incomplete: Detail[], inapplicable: Detail[]}
+type PageReport = { name: string, url: string, details: Details }
+type Details = { violations: Detail[], passes: Detail[], incomplete: Detail[], inapplicable: Detail[] }
 type Detail = { id: string, impact: string | null | undefined, nodes: Node[] }
-type Node = { html: string; any: any[] }
+type Node = { selector: string[] | undefined; html: string, any: any[] }
 
 
 declare global {
@@ -32,7 +33,7 @@ export const injectAxe = () => {
     const fileName =
         typeof require?.resolve === 'function'
             ? require.resolve('axe-core/axe.min.js')
-            : 'node_modules/axe-core/axe.min.js';
+            : '../../node_modules/axe-core/axe.min.js';
     cy.readFile<string>(fileName).then((source) =>
         cy.window({log: false}).then((window) => {
             window.eval(source);
@@ -101,16 +102,22 @@ function urlToGeneric(url: string) {
 
 }
 
-function makeNodesList(nodes: any []): Node [] {
+
+
+
+function makeNodesList(nodes: axe.NodeResult[]): Node [] {
     const nodeList: Node [] = []
-    nodes.forEach((v) => {
-        nodeList.push(
-            {
-                html: v.html,
-                any: v.any,
-            }
-        )
-    });
+
+
+        nodes.forEach((v) => {
+            nodeList.push(
+               {
+                    selector: v.ancestry,
+                    html: v.html,
+                    any: v.any,
+                }
+            )
+        });
     return nodeList
 }
 
@@ -129,7 +136,10 @@ function makeRapport(results: axe.AxeResults): any {
 
     }
 
+
+
     results.violations.forEach((violation) => {
+
         details.violations.push({
             id: violation.id,
             impact: violation.impact,
@@ -137,33 +147,43 @@ function makeRapport(results: axe.AxeResults): any {
         })
     })
 
-    results.passes.forEach((violation) => {
-        details.passes.push({
-            id: violation.id,
-            impact: violation.impact,
-            nodes: makeNodesList(violation.nodes)
-        })
-    })
+    // results.passes.forEach((violation) => {
+    //     details.passes.push({
+    //         id: violation.id,
+    //         impact: violation.impact,
+    //         nodes: makeNodesList(violation.nodes)
+    //     })
+    // })
+    //
+    // results.incomplete.forEach((violation) => {
+    //     details.incomplete.push({
+    //         id: violation.id,
+    //         impact: violation.impact,
+    //         nodes: makeNodesList(violation.nodes)
+    //     })
+    // })
 
-    results.incomplete.forEach((violation) => {
-        details.incomplete.push({
-            id: violation.id,
-            impact: violation.impact,
-            nodes: makeNodesList(violation.nodes)
-        })
-    })
+    // results.idnapplicable.forEach((violation) => {
+    //     details.inapplicable.push({
+    //         id: violation.id,
+    //         impact: violation.impact,
+    //         nodes: makeNodesList(violation.nodes)
+    //     })
+    // })
 
-    results.inapplicable.forEach((violation) => {
-        details.inapplicable.push({
-            id: violation.id,
-            impact: violation.impact,
-            nodes: makeNodesList(violation.nodes)
-        })
-    })
 
+    const reportHTML = createHtmlReport({
+        results,
+        options: {
+            projectKey: 'I need only raw HTML',
+        },
+    });
+
+    cy.writeFile('cypress/downloads/report/report.html', reportHTML);
 
     return details
 }
+
 
 
 export const saveAccessibility = (name: string) => {
@@ -171,6 +191,25 @@ export const saveAccessibility = (name: string) => {
 
     const url = name;
     name = urlToGeneric(name)
+
+
+    // @ts-ignore
+    if (Cypress.getTestRetries() >= 1) {
+        cy.writeFile(scanName,
+            {
+                id: 'Scan: ' + new Date().toISOString().slice(0, 10),
+                date: new Date().toISOString(),
+                report: {
+                    violations: [],
+                    passes: [],
+                    incomplete: [],
+                    inapplicable: []
+                }
+            }
+        )
+    }
+
+
     cy.readFile(scanName).then((report) => {
         // if (report.find((e): any => e.name === name)) {
         //     return
@@ -197,6 +236,10 @@ export const saveAccessibility = (name: string) => {
                 type: 'tag',
                 values: ['wcag2a', 'wcag2aa']
             },
+            xpath: true,
+            ancestry: true,
+            absolutePaths: true,
+            elementRef: true,
         }, (results) => {
 
 
@@ -214,6 +257,7 @@ export const saveAccessibility = (name: string) => {
         )
     })
 }
+
 
 Cypress.Commands.add('injectAxe', injectAxe);
 

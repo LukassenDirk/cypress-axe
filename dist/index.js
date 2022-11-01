@@ -18,13 +18,14 @@ var __rest =
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.saveAccessibility = exports.configureAxe = exports.injectAxe = void 0;
+var axe_html_reporter_1 = require('axe-html-reporter');
 exports.injectAxe = function () {
 	var fileName =
 		typeof (require === null || require === void 0
 			? void 0
 			: require.resolve) === 'function'
 			? require.resolve('axe-core/axe.min.js')
-			: 'node_modules/axe-core/axe.min.js';
+			: '../../node_modules/axe-core/axe.min.js';
 	cy.readFile(fileName).then(function (source) {
 		return cy.window({ log: false }).then(function (window) {
 			window.eval(source);
@@ -131,12 +132,32 @@ function makeRapport(results) {
 			nodes: makeNodesList(violation.nodes),
 		});
 	});
+	var reportHTML = axe_html_reporter_1.createHtmlReport({
+		results: results,
+		options: {
+			projectKey: 'I need only raw HTML',
+		},
+	});
+	cy.writeFile('cypress/downloads/report/report.html', reportHTML);
 	return details;
 }
 exports.saveAccessibility = function (name) {
 	var scanName = 'cypress/downloads/report/scan.json';
 	var url = name;
 	name = urlToGeneric(name);
+	// @ts-ignore
+	if (Cypress.getTestRetries() >= 1) {
+		cy.writeFile(scanName, {
+			id: 'Scan: ' + new Date().toISOString().slice(0, 10),
+			date: new Date().toISOString(),
+			report: {
+				violations: [],
+				passes: [],
+				incomplete: [],
+				inapplicable: [],
+			},
+		});
+	}
 	cy.readFile(scanName).then(function (report) {
 		// if (report.find((e): any => e.name === name)) {
 		//     return

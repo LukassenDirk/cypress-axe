@@ -1,11 +1,271 @@
 {
-  "id": "Scan: 2022-10-27",
-  "date": "2022-10-27T10:07:26.761Z",
+  "id": "Scan: 2022-11-01",
+  "date": "2022-11-01T10:34:06.801Z",
   "report": [
     {
       "url": "test",
       "name": "test/",
-      "details": []
+      "details": {
+        "violations": [
+          {
+            "id": "html-has-lang",
+            "impact": "serious",
+            "nodes": [
+              {
+                "selector": [
+                  "html"
+                ],
+                "html": "<html>",
+                "any": [
+                  {
+                    "id": "has-lang",
+                    "data": {
+                      "messageKey": "noLang"
+                    },
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "The <html> element does not have a lang attribute"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "image-alt",
+            "impact": "critical",
+            "nodes": [
+              {
+                "selector": [
+                  "html > body > div > div > div > div:nth-child(2) > div:nth-child(1) > div > div > h3:nth-child(1) > a > img:nth-child(1)"
+                ],
+                "html": "<img src=\"welcome-content/user.png\">",
+                "any": [
+                  {
+                    "id": "has-alt",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "critical",
+                    "message": "Element does not have an alt attribute"
+                  },
+                  {
+                    "id": "aria-label",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-label attribute does not exist or is empty"
+                  },
+                  {
+                    "id": "aria-labelledby",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                  },
+                  {
+                    "id": "non-empty-title",
+                    "data": {
+                      "messageKey": "noAttr"
+                    },
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "Element has no title attribute"
+                  },
+                  {
+                    "id": "presentational-role",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "minor",
+                    "message": "Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+                  }
+                ]
+              },
+              {
+                "selector": [
+                  "html > body > div > div > div > div:nth-child(2) > div:nth-child(2) > div > h3:nth-child(1) > a > img:nth-child(1)"
+                ],
+                "html": "<img class=\"doc-img\" src=\"welcome-content/admin-console.png\">",
+                "any": [
+                  {
+                    "id": "has-alt",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "critical",
+                    "message": "Element does not have an alt attribute"
+                  },
+                  {
+                    "id": "aria-label",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-label attribute does not exist or is empty"
+                  },
+                  {
+                    "id": "aria-labelledby",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                  },
+                  {
+                    "id": "non-empty-title",
+                    "data": {
+                      "messageKey": "noAttr"
+                    },
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "Element has no title attribute"
+                  },
+                  {
+                    "id": "presentational-role",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "minor",
+                    "message": "Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+                  }
+                ]
+              },
+              {
+                "selector": [
+                  "html > body > div > div > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > h3 > a > img:nth-child(1)"
+                ],
+                "html": "<img src=\"welcome-content/keycloak-project.png\">",
+                "any": [
+                  {
+                    "id": "has-alt",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "critical",
+                    "message": "Element does not have an alt attribute"
+                  },
+                  {
+                    "id": "aria-label",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-label attribute does not exist or is empty"
+                  },
+                  {
+                    "id": "aria-labelledby",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                  },
+                  {
+                    "id": "non-empty-title",
+                    "data": {
+                      "messageKey": "noAttr"
+                    },
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "Element has no title attribute"
+                  },
+                  {
+                    "id": "presentational-role",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "minor",
+                    "message": "Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+                  }
+                ]
+              },
+              {
+                "selector": [
+                  "html > body > div > div > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > h3 > a > img:nth-child(1)"
+                ],
+                "html": "<img src=\"welcome-content/mail.png\">",
+                "any": [
+                  {
+                    "id": "has-alt",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "critical",
+                    "message": "Element does not have an alt attribute"
+                  },
+                  {
+                    "id": "aria-label",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-label attribute does not exist or is empty"
+                  },
+                  {
+                    "id": "aria-labelledby",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                  },
+                  {
+                    "id": "non-empty-title",
+                    "data": {
+                      "messageKey": "noAttr"
+                    },
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "Element has no title attribute"
+                  },
+                  {
+                    "id": "presentational-role",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "minor",
+                    "message": "Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+                  }
+                ]
+              },
+              {
+                "selector": [
+                  "html > body > div > div > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(3) > h3 > a > img:nth-child(1)"
+                ],
+                "html": "<img src=\"welcome-content/bug.png\">",
+                "any": [
+                  {
+                    "id": "has-alt",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "critical",
+                    "message": "Element does not have an alt attribute"
+                  },
+                  {
+                    "id": "aria-label",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-label attribute does not exist or is empty"
+                  },
+                  {
+                    "id": "aria-labelledby",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+                  },
+                  {
+                    "id": "non-empty-title",
+                    "data": {
+                      "messageKey": "noAttr"
+                    },
+                    "relatedNodes": [],
+                    "impact": "serious",
+                    "message": "Element has no title attribute"
+                  },
+                  {
+                    "id": "presentational-role",
+                    "data": null,
+                    "relatedNodes": [],
+                    "impact": "minor",
+                    "message": "Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "passes": [],
+        "incomplete": [],
+        "inapplicable": []
+      }
     }
   ]
 }

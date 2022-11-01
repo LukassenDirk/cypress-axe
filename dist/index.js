@@ -45,10 +45,7 @@ function isEmptyObjectorNull(value) {
 	}
 	return Object.entries(value).length === 0 && value.constructor === Object;
 }
-var checkA11y = function (context, options, resultsCallback, skipFailures) {
-	if (skipFailures === void 0) {
-		skipFailures = false;
-	}
+var checkA11y = function (context, options, resultsCallback) {
 	cy.window({ log: false }).then(function (win) {
 		if (isEmptyObjectorNull(context)) {
 			context = undefined;
@@ -90,7 +87,7 @@ function makeNodesList(nodes) {
 	var nodeList = [];
 	nodes.forEach(function (v) {
 		nodeList.push({
-			selector: v.ancestry,
+			xpath: v.xpath,
 			html: v.html,
 			any: v.any,
 		});
@@ -111,28 +108,27 @@ function makeRapport(results) {
 			nodes: makeNodesList(violation.nodes),
 		});
 	});
-	// results.passes.forEach((violation) => {
-	//     details.passes.push({
-	//         id: violation.id,
-	//         impact: violation.impact,
-	//         nodes: makeNodesList(violation.nodes)
-	//     })
-	// })
-	//
-	// results.incomplete.forEach((violation) => {
-	//     details.incomplete.push({
-	//         id: violation.id,
-	//         impact: violation.impact,
-	//         nodes: makeNodesList(violation.nodes)
-	//     })
-	// })
-	// results.idnapplicable.forEach((violation) => {
-	//     details.inapplicable.push({
-	//         id: violation.id,
-	//         impact: violation.impact,
-	//         nodes: makeNodesList(violation.nodes)
-	//     })
-	// })
+	results.passes.forEach(function (violation) {
+		details.passes.push({
+			id: violation.id,
+			impact: violation.impact,
+			nodes: [],
+		});
+	});
+	results.incomplete.forEach(function (violation) {
+		details.incomplete.push({
+			id: violation.id,
+			impact: violation.impact,
+			nodes: [],
+		});
+	});
+	results.inapplicable.forEach(function (violation) {
+		details.inapplicable.push({
+			id: violation.id,
+			impact: violation.impact,
+			nodes: [],
+		});
+	});
 	return details;
 }
 exports.saveAccessibility = function (name) {
@@ -141,7 +137,7 @@ exports.saveAccessibility = function (name) {
 	name = urlToGeneric(name);
 	cy.readFile(scanName).then(function (report) {
 		if (
-			report.find(function (e) {
+			report.report.find(function (e) {
 				return e.name === name;
 			})
 		) {
@@ -174,8 +170,7 @@ exports.saveAccessibility = function (name) {
 			},
 			function (results) {
 				pageReport.details = makeRapport(results);
-			},
-			true
+			}
 		);
 		report.push(pageReport);
 		report.sort(function (a, b) {
@@ -192,10 +187,3 @@ Cypress.Commands.add('injectAxe', exports.injectAxe);
 Cypress.Commands.add('configureAxe', exports.configureAxe);
 Cypress.Commands.add('checkA11y', checkA11y);
 Cypress.Commands.add('saveAccessibility', exports.saveAccessibility);
-before(function () {
-	cy.writeFile('cypress/downloads/report/scan.json', {
-		id: 'Scan: ' + new Date().toISOString().slice(0, 10),
-		date: new Date().toISOString(),
-		report: [],
-	});
-});

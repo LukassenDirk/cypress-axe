@@ -1,9 +1,8 @@
 import * as axe from 'axe-core';
-
 type PageReport = { name: string, url: string, details: Details }
 type Details = { violations: Detail[], passes: Detail[], incomplete: Detail[], inapplicable: Detail[] }
 type Detail = { id: string, impact: string | null | undefined, nodes: Node[] }
-type Node = { selector: string[] | undefined; html: string, any: any[] }
+type Node = { xpath: string[] | undefined; html: string, any: any[] }
 
 
 declare global {
@@ -57,7 +56,6 @@ const checkA11y = (
     context?: axe.ElementContext,
     options?: Options,
     resultsCallback?: (results: axe.AxeResults) => void,
-    skipFailures = false
 ) => {
     cy.window({log: false})
         .then((win) => {
@@ -111,7 +109,7 @@ function makeNodesList(nodes: axe.NodeResult[]): Node [] {
         nodes.forEach((v) => {
             nodeList.push(
                {
-                    selector: v.ancestry,
+                    xpath: v.xpath,
                     html: v.html,
                     any: v.any,
                 }
@@ -146,29 +144,29 @@ function makeRapport(results: axe.AxeResults): any {
         })
     })
 
-    // results.passes.forEach((violation) => {
-    //     details.passes.push({
-    //         id: violation.id,
-    //         impact: violation.impact,
-    //         nodes: makeNodesList(violation.nodes)
-    //     })
-    // })
-    //
-    // results.incomplete.forEach((violation) => {
-    //     details.incomplete.push({
-    //         id: violation.id,
-    //         impact: violation.impact,
-    //         nodes: makeNodesList(violation.nodes)
-    //     })
-    // })
+    results.passes.forEach((violation) => {
+        details.passes.push({
+            id: violation.id,
+            impact: violation.impact,
+            nodes: []
+        })
+    })
 
-    // results.idnapplicable.forEach((violation) => {
-    //     details.inapplicable.push({
-    //         id: violation.id,
-    //         impact: violation.impact,
-    //         nodes: makeNodesList(violation.nodes)
-    //     })
-    // })
+    results.incomplete.forEach((violation) => {
+        details.incomplete.push({
+            id: violation.id,
+            impact: violation.impact,
+            nodes: []
+        })
+    })
+
+    results.inapplicable.forEach((violation) => {
+        details.inapplicable.push({
+            id: violation.id,
+            impact: violation.impact,
+            nodes: []
+        })
+    })
 
 
 
@@ -187,7 +185,7 @@ export const saveAccessibility = (name: string) => {
 
 
     cy.readFile(scanName).then((report) => {
-        if (report.find((e: { name: string; }): any => e.name === name)) {
+        if (report.report.find((e: { name: string; }): any => e.name === name)) {
             return
         }
         report = report.report;
@@ -218,7 +216,7 @@ export const saveAccessibility = (name: string) => {
 
 
             pageReport.details = makeRapport(results)
-        }, true);
+        });
 
         report.push(pageReport)
         report.sort((a: { name: number; }, b: { name: number; }) => a.name - b.name);
@@ -241,12 +239,5 @@ Cypress.Commands.add('checkA11y', checkA11y);
 
 Cypress.Commands.add('saveAccessibility', saveAccessibility);
 
-before(() => {
-    cy.writeFile('cypress/downloads/report/scan.json',
-        {
-            id: 'Scan: ' + new Date().toISOString().slice(0, 10),
-            date: new Date().toISOString(),
-            report: []
-        }
-    )
-})
+
+

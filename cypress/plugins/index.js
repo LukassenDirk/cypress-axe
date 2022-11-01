@@ -13,6 +13,7 @@
 // the project's config changing)
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+
 /**
  * @type {Cypress.PluginConfig}
  */

@@ -19,6 +19,6 @@ export interface Options extends axe.RunOptions {
 }
 export declare const injectAxe: () => void;
 export declare const configureAxe: (configurationOptions?: {}) => void;
-declare const checkA11y: (context?: string | globalThis.Node | NodeList | axe.ContextObject | undefined, options?: Options | undefined, resultsCallback?: ((results: axe.AxeResults) => void) | undefined, skipFailures?: boolean) => void;
+declare const checkA11y: (context?: string | globalThis.Node | NodeList | axe.ContextObject | undefined, options?: Options | undefined, resultsCallback?: ((results: axe.AxeResults) => void) | undefined) => void;
 export declare const saveAccessibility: (name: string) => void;
 export {};

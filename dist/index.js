@@ -18,7 +18,6 @@ var __rest =
 	};
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.saveAccessibility = exports.configureAxe = exports.injectAxe = void 0;
-var axe_html_reporter_1 = require('axe-html-reporter');
 exports.injectAxe = function () {
 	var fileName =
 		typeof (require === null || require === void 0
@@ -91,6 +90,7 @@ function makeNodesList(nodes) {
 	var nodeList = [];
 	nodes.forEach(function (v) {
 		nodeList.push({
+			selector: v.ancestry,
 			html: v.html,
 			any: v.any,
 		});
@@ -111,34 +111,28 @@ function makeRapport(results) {
 			nodes: makeNodesList(violation.nodes),
 		});
 	});
-	results.passes.forEach(function (violation) {
-		details.passes.push({
-			id: violation.id,
-			impact: violation.impact,
-			nodes: makeNodesList(violation.nodes),
-		});
-	});
-	results.incomplete.forEach(function (violation) {
-		details.incomplete.push({
-			id: violation.id,
-			impact: violation.impact,
-			nodes: makeNodesList(violation.nodes),
-		});
-	});
-	results.inapplicable.forEach(function (violation) {
-		details.inapplicable.push({
-			id: violation.id,
-			impact: violation.impact,
-			nodes: makeNodesList(violation.nodes),
-		});
-	});
-	var reportHTML = axe_html_reporter_1.createHtmlReport({
-		results: results,
-		options: {
-			projectKey: 'I need only raw HTML',
-		},
-	});
-	cy.writeFile('cypress/downloads/report/report.html', reportHTML);
+	// results.passes.forEach((violation) => {
+	//     details.passes.push({
+	//         id: violation.id,
+	//         impact: violation.impact,
+	//         nodes: makeNodesList(violation.nodes)
+	//     })
+	// })
+	//
+	// results.incomplete.forEach((violation) => {
+	//     details.incomplete.push({
+	//         id: violation.id,
+	//         impact: violation.impact,
+	//         nodes: makeNodesList(violation.nodes)
+	//     })
+	// })
+	// results.idnapplicable.forEach((violation) => {
+	//     details.inapplicable.push({
+	//         id: violation.id,
+	//         impact: violation.impact,
+	//         nodes: makeNodesList(violation.nodes)
+	//     })
+	// })
 	return details;
 }
 exports.saveAccessibility = function (name) {
@@ -187,6 +181,10 @@ exports.saveAccessibility = function (name) {
 					type: 'tag',
 					values: ['wcag2a', 'wcag2aa'],
 				},
+				xpath: true,
+				ancestry: true,
+				absolutePaths: true,
+				elementRef: true,
 			},
 			function (results) {
 				pageReport.details = makeRapport(results);

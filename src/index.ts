@@ -1,5 +1,4 @@
 import * as axe from 'axe-core';
-import {createHtmlReport} from "axe-html-reporter";
 
 type PageReport = { name: string, url: string, details: Details }
 type Details = { violations: Detail[], passes: Detail[], incomplete: Detail[], inapplicable: Detail[] }
@@ -172,14 +171,6 @@ function makeRapport(results: axe.AxeResults): any {
     // })
 
 
-    const reportHTML = createHtmlReport({
-        results,
-        options: {
-            projectKey: 'I need only raw HTML',
-        },
-    });
-
-    cy.writeFile('cypress/downloads/report/report.html', reportHTML);
 
     return details
 }

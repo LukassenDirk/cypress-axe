@@ -139,30 +139,16 @@ exports.saveAccessibility = function (name) {
 	var scanName = 'cypress/downloads/report/scan.json';
 	var url = name;
 	name = urlToGeneric(name);
-	// @ts-ignore
-	if (Cypress.getTestRetries() >= 1) {
-		cy.writeFile(scanName, {
-			id: 'Scan: ' + new Date().toISOString().slice(0, 10),
-			date: new Date().toISOString(),
-			report: {
-				violations: [],
-				passes: [],
-				incomplete: [],
-				inapplicable: [],
-			},
-		});
-	}
 	cy.readFile(scanName).then(function (report) {
-		// if (report.find((e): any => e.name === name)) {
-		//     return
-		// }
-		report = report.report;
-		if (!report) {
-			report = [];
+		if (
+			report.find(function (e) {
+				return e.name === name;
+			})
+		) {
+			return;
 		}
-		report = report.filter(function (e) {
-			return e.name !== name;
-		});
+		report = report.report;
+		// report = report.filter((e: any) => e.name !== name)
 		var pageReport = {
 			url: url,
 			name: name,

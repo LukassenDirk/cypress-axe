@@ -184,32 +184,15 @@ export const saveAccessibility = (name: string) => {
     name = urlToGeneric(name)
 
 
-    // @ts-ignore
-    if (Cypress.getTestRetries() >= 1) {
-        cy.writeFile(scanName,
-            {
-                id: 'Scan: ' + new Date().toISOString().slice(0, 10),
-                date: new Date().toISOString(),
-                report: {
-                    violations: [],
-                    passes: [],
-                    incomplete: [],
-                    inapplicable: []
-                }
-            }
-        )
-    }
 
 
     cy.readFile(scanName).then((report) => {
-        // if (report.find((e): any => e.name === name)) {
-        //     return
-        // }
-        report = report.report;
-        if (!report) {
-            report = []
+        if (report.find((e: { name: string; }): any => e.name === name)) {
+            return
         }
-        report = report.filter((e: any) => e.name !== name)
+        report = report.report;
+
+        // report = report.filter((e: any) => e.name !== name)
         const pageReport: PageReport = {
             url,
             name,
